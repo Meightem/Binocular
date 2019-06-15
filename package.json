@@ -56,6 +56,8 @@
     "cors": "^2.8.4",
     "css-loader": "0.28.11",
     "d3": "^4.4.0",
+    "d3-sankey": "^0.12.1",
+    "d3-sankey-diagram": "^0.7.3",
     "dotenv": "4.0.0",
     "emoji-replace": "^1.0.1",
     "errors": "^0.3.0",

@@ -24,10 +24,11 @@ const logger = createLogger({
 });
 
 import codeOwnershipRiver from './visualizations/code-ownership-river';
+import codeFlow from './visualizations/code-flow';
 import issueImpact from './visualizations/issue-impact';
 import hotspotDials from './visualizations/hotspot-dials';
 
-const visualizationModules = [codeOwnershipRiver, issueImpact, hotspotDials];
+const visualizationModules = [codeOwnershipRiver, issueImpact, hotspotDials, codeFlow];
 
 const visualizations = {};
 _.each(visualizationModules, viz => {

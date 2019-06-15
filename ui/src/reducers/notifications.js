@@ -13,6 +13,13 @@ export default handleActions(
       ];
     },
 
+    RECEIVE_CODE_FLOW_DATA_ERROR: (notifications, action) => {
+      return [
+        notification(`Error receiving code flow data: ${action.payload.message}`, 'danger'),
+        ...notifications
+      ];
+    },
+
     RECEIVE_ISSUE_IMPACT_DATA_ERROR: (notifications, action) => {
       return [
         notification(`Error receiving issue-impact data: ${action.payload.message}`, 'danger'),
