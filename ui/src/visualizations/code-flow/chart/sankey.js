@@ -1,49 +1,19 @@
-import React from 'react';
+import React from "react";
+import { sankey } from "d3-sankey-diagram";
+import _ from "lodash";
 import * as d3 from "d3";
-import {sankey, sankeyLink, sankeyLinkTitle} from "d3-sankey-diagram"
-import styles from '../styles.scss';
-import _ from 'lodash';
-
-const SankeyNode = ({node,color}) => {
-  return (
-    <g transform={`translate(`+node.x0 +`,`+node.y0+`)`}>
-      <title>{node.name}</title>
-      <text dy="0.35em" textAnchor="start" transform="translate(-4,-10)" >{node.name}</text>
-      <rect x="0" y="0" width={node.x1 - node.x0} height={node.y1 - node.y0} fill={color} stroke={d3.rgb(color).darker(2)}>
-    </rect>
-  </g>
-)};
-
-
-const SankeyLink = ({ link, color }) => {
-  return (<g className={styles.link}>
-    <path
-      d={sankeyLink()(link)}
-      style={{
-        fill: color,
-      }}
-    />
-    <title>
-    {
-      sankeyLinkTitle(
-              (node1) => node1.name,
-              (node2) => node2.name,
-              d3.format('.3s')
-      )(link)
-    }
-    </title>
-  </g>
-)};
+import SankeyNode from "./SankeyNode.js";
+import SankeyLink from "./SankeyLink.js";
 
 export default class extends React.Component {
-  constructor() {
-    super()
+  constructor(props) {
+    super(props);
 
     this.state = {
-      data: {},
-      height: 100,
-      width: 100,
-      linkWidthAttribute: "commitcount"
+      data: props.data,
+      height: props.height,
+      width: props.width,
+      linkWidthAttribute: props.linkWidthAttribute
     };
   }
 
@@ -56,48 +26,62 @@ export default class extends React.Component {
     });
   }
 
-
   render() {
-    if(!this.state.data.nodes){
-      return (<g></g>);
+    if (!this.state.data.nodes) {
+      return <g />;
     }
-    const {width,height,data} = this.state;
+
+    const { width, height } = this.state;
+
+    const filteredData = this.getFilteredData();
     const { nodes, links } = sankey()
       .nodeWidth(20)
-      .extent([[1, 1], [width - 1, height - 5]])(data);
+      .extent([[1, 1], [width - 1, height - 5]])(filteredData);
 
-    const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
-    const color = (node) => {
-      return colorScale(node.name);
-    }
-    const linkColor = (link) =>{
-      if(this.state.linkWidthAttribute === "lineschanged")
-      if(link.type==="addition"){
-        return "green"
-      }else if(link.type==="deletion"){
-          return "red"
+    const nodeColorScale = d3.scaleOrdinal(d3.schemeCategory10);
+    const linkColorMap = linktype => {
+      switch (linktype) {
+        case "addition":
+          return "green";
+        case "deletion":
+          return "red";
+        default:
+          return "gray";
       }
-      return "gray";
-    }
-
-
+    };
     return (
       <g>
-        {nodes.map((node, i) => (
-          <SankeyNode
-            node={node}
-            color={color(node)}
-            key={i}
-          />
-        ))}
-        {links.map((link, i) => (
-          <SankeyLink
-            link={link}
-            color={linkColor(link)}
-            key={i}
-          />
-        ))}
+        {nodes.map((node, i) =>
+          <SankeyNode node={node} colorScale={nodeColorScale} key={i} />
+        )}
+        {links.map((link, i) =>
+          <SankeyLink link={link} colorMap={linkColorMap} key={i} />
+        )}
       </g>
     );
+  }
+
+  getFilteredData() {
+    if (!this.state.data) {
+      return null;
+    }
+    let data = _.assign({}, this.state.data);
+    const linkWidthAttribute = this.state.linkWidthAttribute;
+    data.links = data.links.filter(link => {
+      switch (linkWidthAttribute) {
+        case "lineschanged":
+          return (
+            link.type === "branching" ||
+            link.type === "addition" ||
+            link.type === "deletion"
+          );
+        case "commitcount":
+            return (
+              link.type === "branching" ||
+              link.type === "addition"
+            );
+      }
+    });
+    return data;
   }
 }

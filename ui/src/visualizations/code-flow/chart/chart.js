@@ -1,23 +1,23 @@
-'use strict';
+"use strict";
 
-import React from 'react';
-import * as d3 from 'd3';
+import React from "react";
+import * as d3 from "d3";
 
-import styles from '../styles.scss';
-import _ from 'lodash';
+import styles from "../styles.scss";
+import _ from "lodash";
 
-import Legend from '../../../components/Legend';
-import ZoomableChartContainer from '../../../components/svg/ZoomableChartContainer.js';
-import OffsetGroup from '../../../components/svg/OffsetGroup.js';
-import * as zoomUtils from '../../../utils/zoom.js';
-import Sankey from './sankey.js';
+import Legend from "../../../components/Legend";
+import ZoomableChartContainer from "../../../components/svg/ZoomableChartContainer.js";
+import OffsetGroup from "../../../components/svg/OffsetGroup.js";
+import * as zoomUtils from "../../../utils/zoom.js";
+import Sankey from "./Sankey.js";
 
 export default class CodeFlow extends React.Component {
   constructor(props) {
     super(props);
 
     this.elems = {};
-    const { data,linkWidthAttribute } = this.extractCommitData(props);
+    const { data, linkWidthAttribute } = this.extractCommitData(props);
 
     this.state = {
       dimensions: zoomUtils.initialDimensions(),
@@ -30,13 +30,11 @@ export default class CodeFlow extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { data,linkWidthAttribute } = this.extractCommitData(nextProps);
-    this.setState(
-      {
-        data: data,
-        linkWidthAttribute: linkWidthAttribute
-      }
-    );
+    const { data, linkWidthAttribute } = this.extractCommitData(nextProps);
+    this.setState({
+      data: data,
+      linkWidthAttribute: linkWidthAttribute
+    });
   }
 
   render() {
@@ -45,7 +43,7 @@ export default class CodeFlow extends React.Component {
     }
 
     const dims = this.state.dimensions;
-
+    const sankeyData = this.state.data;
     return (
       <ZoomableChartContainer
         className={styles.chart}
@@ -53,21 +51,32 @@ export default class CodeFlow extends React.Component {
         onZoom={evt => {
           this.onZoom(evt);
         }}
-        onResize={dims => this.onResize(dims)}>
-          <g>
-            <defs>
-              <clipPath id="chart">
-                <rect x="0" y="0" width={dims.width} height={dims.height} />
-              </clipPath>
-              <clipPath id="x-only">
-                <rect x="0" y={-dims.hMargin} width={dims.width} height={dims.fullHeight} />
-              </clipPath>
-            </defs>
-            <OffsetGroup dims={dims} transform={this.state.transform}>
-               <Sankey data={this.state.data} linkWidthAttribute={this.state.linkWidthAttribute} width={dims.width} height ={dims.height}></Sankey>
-            </OffsetGroup>
-          </g>
-        </ZoomableChartContainer>
+        onResize={dims => this.onResize(dims)}
+      >
+        <g>
+          <defs>
+            <clipPath id="chart">
+              <rect x="0" y="0" width={dims.width} height={dims.height} />
+            </clipPath>
+            <clipPath id="x-only">
+              <rect
+                x="0"
+                y={-dims.hMargin}
+                width={dims.width}
+                height={dims.fullHeight}
+              />
+            </clipPath>
+          </defs>
+          <OffsetGroup dims={dims} transform={this.state.transform}>
+            <Sankey
+              data={sankeyData}
+              linkWidthAttribute={this.state.linkWidthAttribute}
+              width={dims.width}
+              height={dims.height}
+            />
+          </OffsetGroup>
+        </g>
+      </ZoomableChartContainer>
     );
   }
 
@@ -77,7 +86,7 @@ export default class CodeFlow extends React.Component {
     }
     return {
       data: props.data,
-      linkWidthAttribute: props.linkWidthAttribute,
+      linkWidthAttribute: props.linkWidthAttribute
     };
   }
 }
