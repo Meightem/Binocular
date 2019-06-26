@@ -8,14 +8,16 @@ export default class extends React.Component {
 
     this.state = {
       link: props.link,
-      colorMap: props.colorMap
+      colorMap: props.colorMap,
+      scaleFactor: props.scaleFactor
     };
   }
 
   componentWillReceiveProps(nextProps) {
     this.setState({
       link: nextProps.link,
-      colorMap: nextProps.colorMap
+      colorMap: nextProps.colorMap,
+      scaleFactor: nextProps.scaleFactor
     });
   }
 

@@ -13,7 +13,8 @@ export default class extends React.Component {
       data: props.data,
       height: props.height,
       width: props.width,
-      linkWidthAttribute: props.linkWidthAttribute
+      linkWidthAttribute: props.linkWidthAttribute,
+      scaleFactor: props.scaleFactor
     };
   }
 
@@ -22,7 +23,8 @@ export default class extends React.Component {
       data: nextProps.data,
       height: nextProps.height,
       width: nextProps.width,
-      linkWidthAttribute: nextProps.linkWidthAttribute
+      linkWidthAttribute: nextProps.linkWidthAttribute,
+      scaleFactor: nextProps.scaleFactor
     });
   }
 
@@ -32,7 +34,7 @@ export default class extends React.Component {
     }
 
     const { width, height } = this.state;
-
+    const scaleFactor = this.state.scaleFactor;
     const filteredData = this.getFilteredData();
     const { nodes, links } = sankey()
       .nodeWidth(20)
@@ -52,10 +54,10 @@ export default class extends React.Component {
     return (
       <g>
         {nodes.map((node, i) =>
-          <SankeyNode node={node} colorScale={nodeColorScale} key={i} />
+          <SankeyNode node={node} colorScale={nodeColorScale} scaleFactor={scaleFactor} key={i} />
         )}
         {links.map((link, i) =>
-          <SankeyLink link={link} colorMap={linkColorMap} key={i} />
+          <SankeyLink link={link} colorMap={linkColorMap} scaleFactor={scaleFactor} key={i} />
         )}
       </g>
     );
