@@ -7,6 +7,7 @@ const aql = arangodb.aql;
 const commitsToFiles = db._collection('commits-files');
 const builds = db._collection('builds');
 const commitsToStakeholders = db._collection('commits-stakeholders');
+const commitsToCommits = db._collection('commits-commits');
 const paginated = require('./paginated.js');
 const Timestamp = require('./Timestamp.js');
 
@@ -100,6 +101,28 @@ module.exports = new gql.GraphQLObjectType({
                 RETURN build`
             )
             .toArray();
+        }
+      },
+      parentCommits:{
+        type: new gql.GraphQLList(require('./commit.js')),
+        resolve(commit){
+          return db
+            ._query(
+              aql`FOR parent IN 1..1 INBOUND ${commit} ${commitsToCommits}
+                        RETURN parent`
+              )
+              .toArray()
+        }
+      },
+      childCommits:{
+        type: new gql.GraphQLList(require('./commit.js')),
+        resolve(commit){
+          return db
+            ._query(
+              aql`FOR parent IN 1..1 OUTBOUND ${commit} ${commitsToCommits}
+                        RETURN parent`
+              )
+              .toArray()
         }
       }
     };

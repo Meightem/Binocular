@@ -20,6 +20,7 @@ const files = db._collection('files');
 const stakeholders = db._collection('stakeholders');
 const issues = db._collection('issues');
 const builds = db._collection('builds');
+const commitsToCommits = db._collection('commits-commits');
 
 const ISSUE_NUMBER_REGEX = /^#?(\d+).*$/;
 
@@ -235,7 +236,39 @@ const queryType = new gql.GraphQLObjectType({
             .toArray()[0];
         }
       },
-      issueDateHistogram: makeDateHistogramEndpoint(issues)
+      issueDateHistogram: makeDateHistogramEndpoint(issues),
+
+      commitGroups: {
+        type: new gql.GraphQLList(require('./types/commitGroup.js')),
+        resolve(root) {
+          return db
+            ._query(
+              aql`let specialCommits = (FOR c IN ${commits}
+                                          let parentCommitCount = COUNT(FOR other IN 1..1 INBOUND c ${commitsToCommits} RETURN other)
+                                          let childrenCommitCount = COUNT(FOR other IN 1..1 OUTBOUND c ${commitsToCommits} RETURN other)
+                                          FILTER (childrenCommitCount != 1) OR (parentCommitCount != 1)
+                                          RETURN c
+                                      )
+                  RETURN FLATTEN(
+                    FOR commit IN specialCommits
+                      RETURN (
+                        FOR c, e, p IN 1..100 OUTBOUND commit ${commitsToCommits}
+                          PRUNE CONTAINS_ARRAY(specialCommits, c) AND (NOT (c == commit))
+                          OPTIONS {bfs: true, uniqueEdges : 'path', uniqueVertices : 'path'}
+                          FOR innerCommit IN [c]
+                            FILTER CONTAINS_ARRAY(specialCommits, c) AND (NOT (c == commit))
+                              RETURN
+                                {
+                                  "startCommit": commit,
+                                  "innerCommits": SLICE(p.vertices, 1, LENGTH(p.vertices) - 2),
+                                  "endCommit": c
+                                }
+                      )
+                  )`
+            )
+            .toArray()[0]
+        }
+      }
     };
   }
 });
