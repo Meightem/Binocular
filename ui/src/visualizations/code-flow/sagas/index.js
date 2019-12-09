@@ -7,7 +7,7 @@ import _ from 'lodash';
 
 import { fetchFactory, timestampedActionFactory, mapSaga } from '../../../sagas/utils.js';
 
-import getDummyData from './getDummyData.js';
+import getCommitGroups from './getCommitGroups';
 
 export const setLinkWidthAttribute= createAction('SET_LINK_WIDTH_ATTRIBUTE');
 export const openCommit = createAction('OPEN_COMMIT');
@@ -63,7 +63,7 @@ function* watchRefresh() {
 
 export const fetchCodeFlowData = fetchFactory(
   function*() {
-    return yield getDummyData();
+    return yield getCommitGroups();
   },
   requestCodeFlowData,
   receiveCodeFlowData,

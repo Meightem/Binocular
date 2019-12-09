@@ -11,7 +11,7 @@ import ChartContainer from "../../../components/svg/ChartContainer.js";
 import GlobalZoomableSvg from "../../../components/svg/GlobalZoomableSvg.js";
 import OffsetGroup from "../../../components/svg/OffsetGroup.js";
 import * as zoomUtils from "../../../utils/zoom.js";
-import Sankey from "./Sankey.js";
+import Sankey from "./sankey.js";
 
 export default class CodeFlow extends React.Component {
   constructor(props) {

@@ -33,12 +33,10 @@ export default class extends React.Component {
       return <g />;
     }
 
-    const { width, height } = this.state;
-    const scaleFactor = this.state.scaleFactor;
-    const filteredData = this.getFilteredData();
+    const { width, height, scaleFactor, data } = this.state;
     const { nodes, links } = sankey()
-      .nodeWidth(20)
-      .extent([[1, 1], [width - 1, height - 5]])(filteredData);
+      .nodeWidth(10)
+      .extent([[1, 1], [width*4 - 1, height/2 - 5]])(data);
 
     const nodeColorScale = d3.scaleOrdinal(d3.schemeCategory10);
     const linkColorMap = linktype => {
@@ -61,29 +59,5 @@ export default class extends React.Component {
         )}
       </g>
     );
-  }
-
-  getFilteredData() {
-    if (!this.state.data) {
-      return null;
-    }
-    let data = _.assign({}, this.state.data);
-    const linkWidthAttribute = this.state.linkWidthAttribute;
-    data.links = data.links.filter(link => {
-      switch (linkWidthAttribute) {
-        case "lineschanged":
-          return (
-            link.type === "branching" ||
-            link.type === "addition" ||
-            link.type === "deletion"
-          );
-        case "commitcount":
-            return (
-              link.type === "branching" ||
-              link.type === "addition"
-            );
-      }
-    });
-    return data;
   }
 }
