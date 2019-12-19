@@ -14,7 +14,8 @@ export default class extends React.Component {
       height: props.height,
       width: props.width,
       linkWidthAttribute: props.linkWidthAttribute,
-      scaleFactor: props.scaleFactor
+      scaleFactor: props.scaleFactor,
+      mode: props.mode
     };
   }
 
@@ -24,19 +25,20 @@ export default class extends React.Component {
       height: nextProps.height,
       width: nextProps.width,
       linkWidthAttribute: nextProps.linkWidthAttribute,
-      scaleFactor: nextProps.scaleFactor
+      scaleFactor: nextProps.scaleFactor,
+      mode: nextProps.mode
     });
   }
 
   render() {
-    if (!this.state.data.nodes) {
+    const { width, height, scaleFactor, data, mode } = this.state;
+    const shownData = mode === "branches" ? data.commitGroups : data.forks;
+    if (!shownData) {
       return <g />;
     }
-
-    const { width, height, scaleFactor, data } = this.state;
     const { nodes, links } = sankey()
       .nodeWidth(10)
-      .extent([[1, 1], [width*4 - 1, height/2 - 5]])(data);
+      .extent([[1, 1], [width*4 - 1, height/2 - 5]])(shownData);
 
     const nodeColorScale = d3.scaleOrdinal(d3.schemeCategory10);
     const linkColorMap = linktype => {

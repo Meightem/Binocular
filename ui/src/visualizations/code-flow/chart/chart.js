@@ -18,11 +18,12 @@ export default class CodeFlow extends React.Component {
     super(props);
 
     this.elems = {};
-    const { data, linkWidthAttribute } = this.extractCommitData(props);
+    const { data, linkWidthAttribute, mode } = this.extractCommitData(props);
 
     this.state = {
       data: data,
       linkWidthAttribute: linkWidthAttribute,
+      mode: mode,
       transform: d3.zoomIdentity,
       dimensions: zoomUtils.initialDimensions(),
     };
@@ -32,10 +33,11 @@ export default class CodeFlow extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { data, linkWidthAttribute } = this.extractCommitData(nextProps);
+    const { data, linkWidthAttribute, mode } = this.extractCommitData(nextProps);
     this.setState({
       data: data,
-      linkWidthAttribute: linkWidthAttribute
+      linkWidthAttribute: linkWidthAttribute,
+      mode: mode
     });
   }
 
@@ -73,6 +75,7 @@ export default class CodeFlow extends React.Component {
               <Sankey
                 data={sankeyData}
                 linkWidthAttribute={this.state.linkWidthAttribute}
+                mode={this.state.mode}
                 width={dims.width}
                 height={dims.height}
                 scaleFactor={transform.k}
@@ -90,7 +93,8 @@ export default class CodeFlow extends React.Component {
     }
     return {
       data: props.data,
-      linkWidthAttribute: props.linkWidthAttribute
+      linkWidthAttribute: props.linkWidthAttribute,
+      mode: props.mode
     };
   }
 }

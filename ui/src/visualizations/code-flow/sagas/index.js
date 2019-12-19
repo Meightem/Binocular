@@ -8,8 +8,11 @@ import _ from 'lodash';
 import { fetchFactory, timestampedActionFactory, mapSaga } from '../../../sagas/utils.js';
 
 import getCommitGroups from './getCommitGroups';
+import getForks from './getForks';
 
-export const setLinkWidthAttribute= createAction('SET_LINK_WIDTH_ATTRIBUTE');
+export const setLinkWidthAttribute = createAction('SET_LINK_WIDTH_ATTRIBUTE');
+export const setMode = createAction('SET_MODE');
+
 export const openCommit = createAction('OPEN_COMMIT');
 
 export const requestCodeFlowData = createAction('REQUEST_CODE_FLOW_DATA');
@@ -63,7 +66,19 @@ function* watchRefresh() {
 
 export const fetchCodeFlowData = fetchFactory(
   function*() {
-    return yield getCommitGroups();
+    return yield Promise.join(
+        getCommitGroups(),
+        getForks()
+      ).spread((commitGroups, forks) => {
+        return {
+          commitGroups,
+          forks
+        };
+      })
+      .catch(function(e) {
+        console.error(e.stack);
+        throw e;
+      });
   },
   requestCodeFlowData,
   receiveCodeFlowData,

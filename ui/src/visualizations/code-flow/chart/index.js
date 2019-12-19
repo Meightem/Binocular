@@ -10,6 +10,7 @@ const mapStateToProps = (state) => {
   return {
     data: corState.data.data,
     linkWidthAttribute: corState.config.linkWidthAttribute,
+    mode: corState.config.mode
   };
 };
 
