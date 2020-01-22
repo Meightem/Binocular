@@ -12,7 +12,7 @@ import makeAppReducer from './reducers';
 
 import 'bulma';
 import 'react-tippy/dist/tippy.css';
-import 'font-awesome/css/font-awesome.css';
+import '@fortawesome/fontawesome-free/css/all.css';
 import './global.scss';
 
 const socket = io({ path: '/wsapi' });
@@ -23,12 +23,13 @@ const logger = createLogger({
   collapsed: () => true
 });
 
+import dashboard from './visualizations/dashboard';
 import codeOwnershipRiver from './visualizations/code-ownership-river';
 import codeFlow from './visualizations/code-flow';
 import issueImpact from './visualizations/issue-impact';
 import hotspotDials from './visualizations/hotspot-dials';
 
-const visualizationModules = [codeOwnershipRiver, issueImpact, hotspotDials, codeFlow];
+const visualizationModules = [dashboard, codeOwnershipRiver, issueImpact, hotspotDials, codeFlow];
 
 const visualizations = {};
 _.each(visualizationModules, viz => {
