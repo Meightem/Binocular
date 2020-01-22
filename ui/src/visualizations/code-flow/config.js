@@ -31,8 +31,8 @@ const CodeFlowConfigComponent = props => {
               value={props.mode}
               onChange={value => props.onChangeMode(value)}
               options={[
-                { label: 'Branches', icon: 'code-fork', value: 'branches' },
-                { label: 'Forks', icon: 'cutlery', value: 'forks' }
+                { label: 'Branches', icon: 'code-branch', value: 'branches' },
+                { label: 'Forks', icon: 'utensils', value: 'forks' }
               ]}
             />
           </div>
