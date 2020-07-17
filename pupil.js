@@ -28,10 +28,12 @@ const Hunk = require('./lib/models/Hunk.js');
 const Issue = require('./lib/models/Issue.js');
 const Build = require('./lib/models/Build.js');
 const Stakeholder = require('./lib/models/Stakeholder.js');
+const Branch = require('./lib/models/Branch.js');
 const CommitStakeholderConnection = require('./lib/models/CommitStakeholderConnection.js');
 const IssueStakeholderConnection = require('./lib/models/IssueStakeholderConnection.js');
 const IssueCommitConnection = require('./lib/models/IssueCommitConnection.js');
 const CommitCommitConnection = require('./lib/models/CommitCommitConnection.js');
+const CommitBranchConnection = require('./lib/models/CommitBranchConnection.js');
 
 // set up the endpoints
 app.get('/api/commits', require('./lib/endpoints/get-commits.js'));
@@ -104,6 +106,7 @@ Repository.fromPath(ctx.targetPath)
         .map(indexer => indexer.index())
         .then(() => Commit.deduceStakeholders())
         .then(() => Issue.deduceStakeholders())
+        .then(() => Branch.propageMergeCommits())
         .then(() => createManualIssueReferences(config.get('issueReferences')))
         .then(() => console.log('Indexing finished'))
         .catch(e => e.name === 'Gitlab401Error', function() {
@@ -148,11 +151,13 @@ function ensureDb(repo) {
         Stakeholder.ensureCollection(),
         Issue.ensureCollection(),
         Build.ensureCollection(),
+        Branch.ensureCollection().then(()=> Branch.createIndex({ type: "hash",fields: ["name"], unique: true, sparse: true })),
         CommitStakeholderConnection.ensureCollection(),
         IssueStakeholderConnection.ensureCollection(),
         IssueCommitConnection.ensureCollection(),
-        CommitCommitConnection.ensureCollection()
-      );
+        CommitCommitConnection.ensureCollection(),
+        CommitBranchConnection.ensureCollection().then(()=>CommitBranchConnection.createIndex({ type: "hash", fields: [ "_from", "_to" ], unique: true, sparse: true })),
+      )
     });
 }
 

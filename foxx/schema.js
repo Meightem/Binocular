@@ -252,7 +252,7 @@ const queryType = new gql.GraphQLObjectType({
                   RETURN FLATTEN(
                     FOR commit IN specialCommits
                       RETURN (
-                        FOR c, e, p IN 1..100 OUTBOUND commit ${commitsToCommits}
+                        FOR c, e, p IN 1..1000 OUTBOUND commit ${commitsToCommits}
                           PRUNE CONTAINS_ARRAY(specialCommits, c) AND (NOT (c == commit))
                           OPTIONS {bfs: true, uniqueEdges : 'path', uniqueVertices : 'path'}
                           FOR innerCommit IN [c]

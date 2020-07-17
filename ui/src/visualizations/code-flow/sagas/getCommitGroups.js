@@ -8,6 +8,9 @@ export default function getCommitGroups() {
         commitGroups{
           startCommit{
             sha,
+            branches{
+            	name
+            }
             stats {
               additions
               deletions
@@ -15,6 +18,9 @@ export default function getCommitGroups() {
           },
           innerCommits{
             sha,
+            branches{
+            	name
+            }
             stats {
               additions
               deletions
@@ -22,6 +28,9 @@ export default function getCommitGroups() {
           },
           endCommit{
             sha,
+            branches{
+            	name
+            }
             stats {
               additions
               deletions

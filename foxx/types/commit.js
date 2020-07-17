@@ -8,6 +8,7 @@ const commitsToFiles = db._collection('commits-files');
 const builds = db._collection('builds');
 const commitsToStakeholders = db._collection('commits-stakeholders');
 const commitsToCommits = db._collection('commits-commits');
+const commitsToBranches = db._collection('commits-branches');
 const paginated = require('./paginated.js');
 const Timestamp = require('./Timestamp.js');
 
@@ -121,6 +122,17 @@ module.exports = new gql.GraphQLObjectType({
             ._query(
               aql`FOR parent IN 1..1 OUTBOUND ${commit} ${commitsToCommits}
                         RETURN parent`
+              )
+              .toArray()
+        }
+      },
+      branches:{
+        type: new gql.GraphQLList(require('./branch.js')),
+        resolve(commit){
+          return db
+            ._query(
+              aql`FOR branch IN 1..1 INBOUND ${commit} ${commitsToBranches}
+                    RETURN branch`
               )
               .toArray()
         }

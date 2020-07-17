@@ -1,9 +1,9 @@
 export default function mapToSankeyData(data){
-    console.log("test");
-    if(!data){
-        return undefined;
-      }
+  if(!data){
+    return undefined;
+  }
   let nodes = [];
+  let branchMap = new Object();
   let links = [];
   let counter = 1;
   let map = new Object();
@@ -17,14 +17,17 @@ export default function mapToSankeyData(data){
     const { startCommit, innerCommits, endCommit } = commitGroup;
     if (nodes.indexOf(startCommit.sha) === -1) {
       nodes.push(startCommit.sha);
+      branchMap[startCommit.sha] = startCommit.branches;
       map[startCommit.sha] = counter++;
     }
     if (nodes.indexOf(endCommit.sha) === -1) {
       nodes.push(endCommit.sha);
+      branchMap[endCommit.sha] = endCommit.branches;
       map[endCommit.sha] = counter++;
     }
     if (innerCommits.length > 0) {
       nodes.push(innerCommits[0].sha);
+      branchMap[innerCommits[0].sha] = innerCommits[0].branches;
       map[innerCommits[0].sha] = counter++;
     }
   });
@@ -87,7 +90,13 @@ export default function mapToSankeyData(data){
         };
       }),
       nodes: nodes.map(node => {
-        return { id: map[node], name: node.substring(0,5) };
+        let branchName = branchMap[node];
+        if(branchName && branchName[0]){
+          branchName = branchName[0].name;
+        }else{
+          branchName = node.substring(0,5);
+        }
+        return { id: map[node], name: branchName };
       })
   };
 }

@@ -1,13 +1,10 @@
 'use strict';
 
 const gql = require('graphql-sync');
-const arangodb = require('@arangodb');
-const db = arangodb.db;
-const aql = arangodb.aql;
 
 module.exports = new gql.GraphQLObjectType({
   name: 'commitGroup',
-  description: 'groups linear commits. Propably branches',
+  description: 'groups linear commits. Probably branches',
   fields() {
     return {
       startCommit: {
