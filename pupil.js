@@ -107,6 +107,7 @@ Repository.fromPath(ctx.targetPath)
         .then(() => Commit.deduceStakeholders())
         .then(() => Issue.deduceStakeholders())
         .then(() => Branch.propageMergeCommits())
+        .then(()=> Branch.applyMajorityRule())
         .then(() => createManualIssueReferences(config.get('issueReferences')))
         .then(() => console.log('Indexing finished'))
         .catch(e => e.name === 'Gitlab401Error', function() {
